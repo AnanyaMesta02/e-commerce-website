@@ -8,8 +8,23 @@
     <div>
         <h3>{{ item.product.name }}</h3>
         <p>Price: ₹ {{ item.product.price }}</p>
-        <p>Quantity: {{ item.quantity }}</p>
+        <p>
+        Quantity:
+        <form method="POST" action="{% url 'decrease_quantity' item.product.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">-</button>
+        </form>
+
+        {{ item.quantity }}
+
+        <form method="POST" action="{% url 'increase_quantity' item.product.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">+</button>
+        </form>
+        </p>
+
         <p>Subtotal: ₹ {{ item.subtotal }}</p>
+
         <form method="POST" action="{% url 'remove_from_cart' item.product.id %}">
             {% csrf_token %}
             <button type="submit">Remove</button>
