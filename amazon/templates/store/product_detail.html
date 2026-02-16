@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+</head>
+<body>
+
+<h2>{{ product.name }}</h2>
+
+{% if product.image %}
+    <img src="{{ product.image.url }}" width="300">
+{% endif %}
+
+<p>Price: ₹ {{ product.price }}</p>
+<p>{{ product.description }}</p>
+
+<a href="/">Back</a>
+
+</body>
+</html>

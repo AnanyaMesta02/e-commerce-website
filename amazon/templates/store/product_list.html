@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products</title>
+</head>
+<body>
+
+<h1>Products</h1>
+
+<!-- Cart Link -->
+<a href="{% url 'cart' %}">🛒 Go to Cart</a>
+<hr>
+
+{% for product in products %}
+    <div style="margin-bottom: 20px;">
+
+        <h3>{{ product.name }}</h3>
+
+        {% if product.image %}
+            <img src="{{ product.image.url }}" width="200">
+        {% endif %}
+
+        <p>Price: ₹ {{ product.price }}</p>
+
+        <!-- Add to Cart Form -->
+        <form method="POST" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            <button type="submit">Add to Cart</button>
+        </form>
+
+        <hr>
+
+    </div>
+
+{% empty %}
+    <p>No products available.</p>
+{% endfor %}
+
+</body>
+</html>
