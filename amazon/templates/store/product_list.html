@@ -1,27 +1,7 @@
+{% extends 'store/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Products</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
 
-
-<div class="header">
-    <h1> MY STORE </h1>
-
-    <div>
-        <a href="{% url 'cart' %}" class="cart-link">Cart</a>
-
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="cart-link">Logout</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="cart-link">Login</a>
-            <a href="{% url 'register' %}" class="cart-link">Register</a>
-        {% endif %}
-    </div>
-</div>
+{% block content %}
 
 <div class="container">
 
@@ -34,12 +14,17 @@
             {% endif %}
 
             <h3>{{ product.name }}</h3>
-            <p class="price">₹ {{ product.price }}</p>
+            <p class="price">💰₹ {{ product.price }}</p>
+            <p class="rating">rating {{ product.rating }} / 5⭐</p>
 
             <form method="POST" action="{% url 'add_to_cart' product.id %}">
                 {% csrf_token %}
-                <button type="submit">Add to Cart</button>
+                <button type="submit">🛍 Add to Cart</button>
             </form>
+           <a href="{% url 'add_to_wishlist' product.id %}" class="wishlist-heart">
+    ♡
+</a>
+
 
         </div>
         {% endfor %}
@@ -47,5 +32,4 @@
 
 </div>
 
-</body>
-</html>
+{% endblock %}

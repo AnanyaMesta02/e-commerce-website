@@ -1,6 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Wishlist
+from django.contrib.auth.decorators import login_required
+
+
 
 @login_required
 def product_list(request):
@@ -23,6 +28,9 @@ def add_to_cart(request, id):
 
     request.session['cart'] = cart
     print("After:", cart)
+
+    messages.success(request, "Item added to cart successfully 🛒")
+
 
     return redirect('product_list')
 
@@ -66,6 +74,8 @@ def remove_from_cart(request, id):
         del cart[str(id)]
 
     request.session['cart'] = cart
+    messages.warning(request, "Item removed from cart ❌")
+
     return redirect('cart')
 
 def increase_quantity(request, id):
@@ -130,7 +140,29 @@ def checkout(request):
 
     order.total_price = total
     order.save()
+    messages.success(request, "Order placed successfully 🎉")
 
     request.session['cart'] = {}
 
     return render(request, 'store/order_success.html', {'order': order})
+
+@login_required
+def add_to_wishlist(request, id):
+    product = Product.objects.get(id=id)
+    Wishlist.objects.get_or_create(user=request.user, product=product)
+    messages.success(request, "Added to wishlist ❤️")
+    return redirect('product_list')
+
+
+@login_required
+def wishlist_view(request):
+    items = Wishlist.objects.filter(user=request.user)
+    return render(request, 'store/wishlist.html', {'items': items})
+
+
+@login_required
+def remove_from_wishlist(request, id):
+    product = Product.objects.get(id=id)
+    Wishlist.objects.filter(user=request.user, product=product).delete()
+    messages.warning(request, "Removed from wishlist")
+    return redirect('wishlist')

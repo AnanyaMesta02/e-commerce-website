@@ -1,0 +1,25 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<h2>❤️ My Wishlist</h2>
+
+{% for item in items %}
+<div class="card">
+    <h3>{{ item.product.name }}</h3>
+    <p>₹ {{ item.product.price }}</p>
+    <a href="{% url 'remove_from_wishlist' item.product.id %}">Remove</a>
+   
+</div>
+
+{% empty %}
+<p>No items in wishlist.</p>
+{% endfor %}
+<div style="margin-top:30px;">
+    <a href="{% url 'product_list' %}" class="cart-link">
+        ← Continue Shopping
+    </a>
+</div>
+
+
+{% endblock %}
