@@ -16,8 +16,15 @@
 
         <a href="{% url 'wishlist' %}" class="wishlist-header">Wishlist</a>
     </div>
-    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search products...">
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+
     <div class="right-header">
+        <a href="{% url 'profile' %}" class="cart-link">Profile</a>
+        <a href="{% url 'order_history' %}" class="cart-link">My Orders</a>
         <a href="{% url 'cart' %}" class="cart-link">🛒Cart</a>
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}" class="cart-link">🚪Logout</a>
@@ -28,7 +35,7 @@
     </div>
 </div>
 
-<!-- MOVE THIS OUTSIDE HEADER -->
+
 {% if messages %}
     {% for message in messages %}
         <div class="alert {{ message.tags }}">
@@ -55,6 +62,34 @@
             }, 500);
         });
     }, 3000); // disappears after 3 seconds
+</script>
+<script>
+const searchInput = document.getElementById("searchInput");
+const resultsBox = document.getElementById("searchResults");
+
+searchInput.addEventListener("keyup", function() {
+    let query = this.value;
+
+    if (query.length === 0) {
+        resultsBox.innerHTML = "";
+        return;
+    }
+
+    fetch(`/live-search/?q=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            resultsBox.innerHTML = "";
+
+            data.forEach(item => {
+                resultsBox.innerHTML += `
+                    <a href="/product/${item.id}/" class="search-item">
+                        <img src="${item.image}" width="40">
+                        ${item.name} - ₹${item.price}
+                    </a>
+                `;
+            });
+        });
+});
 </script>
 
 </body>

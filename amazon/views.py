@@ -4,13 +4,40 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Wishlist
 from django.contrib.auth.decorators import login_required
+from .models import Order
+from django.http import JsonResponse
+def live_search(request):
+    query = request.GET.get('q', '')
+    products = []
 
+    if query:
+        results = Product.objects.filter(name__icontains=query)[:5]
+        for product in results:
+            products.append({
+                'id': product.id,
+                'name': product.name,
+                'price': str(product.price),
+                'image': product.image.url if product.image else ''
+            })
 
+    return JsonResponse(products, safe=False)
 
+from django.db.models import Q
 @login_required
+
 def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'store/product_list.html', {'products': products})
+    query = request.GET.get('q')
+
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query)
+        )
+    else:
+        products = Product.objects.all()
+
+    return render(request, 'store/product_list.html', {
+        'products': products
+    })
 
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
@@ -166,3 +193,14 @@ def remove_from_wishlist(request, id):
     Wishlist.objects.filter(user=request.user, product=product).delete()
     messages.warning(request, "Removed from wishlist")
     return redirect('wishlist')
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'store/order_history.html', {'orders': orders})
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def profile(request):
+    return render(request, 'store/profile.html')
